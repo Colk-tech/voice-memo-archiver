@@ -106,3 +106,10 @@ sidecar の取得状態は確定していない。値・名前は出力せず、
 候補を一律に永続 recording ID と扱わない。無変換 export の size / SHA-256
 とローカル decode を確認したが、cloud materialization・全 metadata・
 忠実な復元・atomic snapshot は未検証であり、Phase 0 Go は引き続き保留。
+
+## 合成 record framing の検証
+
+[record envelope](../POC/2026-10-17-record-envelope.md) で、型付き値と caller
+指定の schema / encoding / 観測内位置を長さ付き形式で往復した。DB を読む
+API は追加せず、合成入力のみを用いる。保存形式の採用判断や実機 metadata
+保全の証拠とはしない。取得完全性は UNKNOWN、Phase 0 Go は保留のまま。

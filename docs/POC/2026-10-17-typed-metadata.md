@@ -81,3 +81,10 @@ coverage は 100%。UTF-16 の両 byte order、SQL / Python timeout、容量と
 この結果は raw metadata の完全取得・永続保全・復元の証明ではない。
 未解釈の NULL を missing 等へ変換せず、取得完全性は UNKNOWN、削除は無効。
 O-002 と Phase 0 Go 判定は引き続き未決とする。
+
+## 合成 record container の追加実験
+
+[record envelope](2026-10-17-record-envelope.md) で version / 長さ、encoding、
+選択した table の記述子、列順、観測内の位置を単一値 frame と結び付けた。
+合成入力だけのメモリ内検証であり、実機値の追加取得・永続保全・本番形式の
+採用は行わない。既存の実機往復結果を record 保全の証明へ昇格させない。

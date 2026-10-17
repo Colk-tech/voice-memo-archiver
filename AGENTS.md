@@ -385,3 +385,18 @@ requested and authorized.
   matching contexts do not prove native ID or recording correspondence.
 - The guard was verified with synthetic databases only. It does not
   retroactively revalidate the earlier live observations or resolve Phase 0.
+
+## 22. Synthetic record envelope experiment
+
+- `pocs/record_envelope/` frames caller-supplied synthetic records in memory
+  only; no DB, source-selection, file or network API is provided. Do not feed
+  private `SyntheticState` into it or log its records/columns/encoded bytes.
+- Descriptors use strict UTF-8 without normalization; typed TEXT bytes keep
+  their separate SQLite encoding label. Validate value frames with the
+  existing codec, then retain their original bytes, including REAL bit patterns.
+- Bound total frames to 8 MiB, descriptor/cell bodies to 1 MiB, columns to
+  512 and observation IDs to 64 bytes. Slots are local uint32 positions,
+  never native recording IDs. Provenance is a caller claim, not evidence.
+- This is a synthetic-only disposable format experiment, not an adopted
+  record archive or full schema capture. No checksum/authentication is
+  included. Completeness stays UNKNOWN, restoration UNTESTED, disposal off.
