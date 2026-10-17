@@ -1,7 +1,7 @@
 # Voice Memo Archiver
 
 現在は Phase 0 の SQLite スキーマ調査基盤のみ実装している。
-使い捨ての PoC とテストは `pocs/sqlite_probe/` に隔離し、
+使い捨ての PoC とテストは `pocs/` に隔離し、
 本番用の `src/` はまだ作成していない。
 Voice Memos の収集・保存・復元・削除機能は未実装。
 設計は [DESIGN](docs/DESIGN.md)、判断と限界は
@@ -17,7 +17,7 @@ uv run ruff check .
 uv run ruff format --check .
 uv run ty check
 uv run mypy --strict
-uv run pytest --cov=pocs/sqlite_probe --cov-branch \
+uv run pytest --cov=pocs --cov-branch \
   --cov-report=xml --cov-fail-under=100 -W error::ResourceWarning
 uv run yamllint .github/workflows codecov.yml .yamllint
 ```
@@ -62,3 +62,16 @@ Codecov には Linux CI から `coverage.xml` のみを OIDC で送信する。
 トークンの登録は不要。実行結果は
 [Codecov](https://app.codecov.io/gh/Colk-tech/voice-memo-archiver) で確認する。
 GitHub の status 連携には Codecov App のリポジトリへの導入も必要。
+
+## macOS ホストとアクセスの調査
+
+```sh
+uv run python -m pocs.macos_inventory.cli --source-root /approved/source/root
+```
+
+OS / Voice Memos のバージョンと、指定 root の直下件数を出力する。
+root の最終要素が symlink の場合は追従せず、子ファイルは開かない。
+権限拒否や上限超過は終了コード 1。録音数・完全性・materialization は
+この観測だけでは判定しない。合成 fixture のみを CI で使う。
+実機結果と未検証項目は
+[調査記録](docs/POC/2026-10-17-macos-inventory.md) を参照。

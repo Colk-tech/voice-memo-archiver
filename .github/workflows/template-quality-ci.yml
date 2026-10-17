@@ -25,7 +25,7 @@ jobs:
       - run: uv run ty check
       - run: uv run mypy --strict
       - run: >-
-          uv run pytest --cov=pocs/sqlite_probe --cov-branch
+          uv run pytest --cov=pocs --cov-branch
           --cov-report=xml --cov-fail-under=100 -W error::ResourceWarning
       - run: uv run yamllint .github/workflows codecov.yml .yamllint
       - name: Upload coverage to Codecov

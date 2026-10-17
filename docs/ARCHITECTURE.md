@@ -6,6 +6,7 @@
 
 ```text
 pocs/
+  macos_inventory/  # ホストとアクセス可否の調査＋同居テスト
   sqlite_probe/
     cli.py          # 調査 CLI
     probe.py        # SQLite 調査
