@@ -114,3 +114,7 @@ Voice Memos 復元を確認したものではない。削除は引き続き無�
 [合成 record envelope](docs/POC/2026-10-17-record-envelope.md) では、型付き値を
 schema・encoding・観測内の位置と結び付け、メモリ内の可逆性と不正形式の
 拒否を検証する。実 DB の採取・永続保全・保存形式の採用は対象外である。
+
+[合成 SQL との対応検証](docs/POC/2026-10-17-sql-record-trial.md) は、実験自身が
+作るメモリ DB から schema・列・型付き値を取り、seed の期待値と envelope の
+往復を照合する。generated 列と重複行も対象だが、実機 reader ではない。

@@ -110,3 +110,10 @@ uv run pytest pocs/record_envelope
 100%。Ruff check / format、ty、mypy strict、変更 Markdown lint、diff check
 も成功した。サブエージェントが実装を独立レビューし、専用 57 テストと型検査
 の成功を確認した。実機 Source / Voice Memos への追加アクセスは行わない。
+
+## 合成 SQLite との接続実験
+
+後続の [SQL-to-record trial](2026-10-17-sql-record-trial.md) で、固定の合成
+メモリ DB から SQL 観測値・記述子を取り、独立した seed の期待値と envelope
+の往復を照合した。codec 自身への DB / path 入力は追加しない。
+任意 DB や実機の取得・schema 全体の保全は引き続き対象外である。
