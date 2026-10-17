@@ -11,6 +11,9 @@ pocs/
   snapshot_trial/   # 合成入力のみの WAL / 外部ファイル反例
   sqlite_capture/   # 許可された raw DB/WAL copy と隔離検査
   metadata_profile/ # 隔離コピー上の ID・格納型・名前一致候補
+  raw_metadata/     # SQL 値の型付き往復検証
+  sidecar_probe/    # 固定拡張子の read-only 署名候補調査
+  synthetic_audio/  # 合成入力・一意な対象選択・raw export
   sqlite_probe/
     cli.py          # 調査 CLI
     probe.py        # SQLite 調査

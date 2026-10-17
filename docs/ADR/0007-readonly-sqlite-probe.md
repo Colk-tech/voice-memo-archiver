@@ -93,3 +93,16 @@ native recording ID の意味・名称変更や編集後の安定性は未確定
 音声名と一致する DB セルはあったが、関連性・原本性・materialization や
 sidecar の取得状態は確定していない。値・名前は出力せず、一時コピーは
 削除した。O-001 / O-002 / O-003 / O-005 と Go 判定は引き続き未決。
+
+## 合成録音と型付き値の追加証拠
+
+[型付き SQL 値](../POC/2026-10-17-typed-metadata.md) のメモリ内往復と
+[sidecar 署名](../POC/2026-10-17-sidecar-signatures.md) を追加検証した。
+値の codec は raw metadata record や原本 DB の物理表現を置き換えない。
+
+別途ユーザーが合成録音 1 件の作成・名称変更・編集を明示許可した。
+[実機記録](../POC/2026-10-17-synthetic-recording.md) では TEXT ID 候補は
+名称変更・短縮編集で一致し、BLOB ID 候補は編集で変化した。全ての ID 名称
+候補を一律に永続 recording ID と扱わない。無変換 export の size / SHA-256
+とローカル decode を確認したが、cloud materialization・全 metadata・
+忠実な復元・atomic snapshot は未検証であり、Phase 0 Go は引き続き保留。
