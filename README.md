@@ -39,7 +39,7 @@ DB を読み取り専用で開き、メモリ内 backup の schema fingerprint �
 
 SQLite が共有メモリを作成・更新する可能性があるため、ディレクトリ全体の
 無変更は保証しない。この調査結果は録音の完全取得や復元の証明ではない。
-macOS build、ID 安定性、音声 export の実機検証は今後実施する。
+実機 PoC の観測範囲は後述の記録を参照。ID の本番契約は未確定である。
 
 CI は Linux/macOS で合成 DB のみを検査する。ローカルと CI の
 分岐込みカバレッジ閾値は 100%。実機 E2E と branch protection は未設定。
@@ -102,3 +102,11 @@ DB の構造集計を確認できたが、Phase 0 は未完了である。
 隔離コピーで NULL / 空値 / DISTINCT と実際の格納型を集計し、音声名との
 一致候補を数えた。名前・値は出力しない。ID 安定性、音声 / sidecar の
 関連性、raw metadata の保全を確認したものではない。
+
+続いて [型付き値の往復検証](docs/POC/2026-10-17-typed-metadata.md) と
+[sidecar 署名](docs/POC/2026-10-17-sidecar-signatures.md) を観測した。
+ユーザーが明示許可した
+[合成録音の変更・export](docs/POC/2026-10-17-synthetic-recording.md) では、
+TEXT ID 候補が名称変更・短縮後も一致し、BLOB ID 候補は編集で変化した。
+無変換コピーの SHA-256 / size は一致したが、native ID の契約や忠実な
+Voice Memos 復元を確認したものではない。削除は引き続き無効である。

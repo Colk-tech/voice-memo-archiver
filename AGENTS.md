@@ -348,3 +348,27 @@ requested and authorized.
   as missing/unsupported/not_applicable without separate evidence.
 - Keep rename/edit experiments and synthetic recording export separate from
   read-only observations. No source modifications are authorized by this PoC.
+
+## 20. Typed metadata, sidecars and authorized synthetic recording
+
+- `pocs/raw_metadata/` round-trips SQL-observed values in memory. Keep TEXT
+  bytes and database encoding distinct from Unicode normalization; preserve
+  NULL, empty TEXT/BLOB, int64 and IEEE754 types. This is a value codec, not
+  a complete record artifact, raw physical SQLite backup or acquisition proof.
+- `pocs/sidecar_probe/` opens fixed sidecar suffix candidates read-only with
+  bounds and repeated-read checks. Signature hints are not valid parsing or
+  recording associations. Never emit names, keys, values, bytes or hashes.
+- The user explicitly authorized creation, rename and editing of one new
+  synthetic recording. The experiment imported VMA-Phase0-20261017 through
+  Voice Memos and retained it as VMA-Phase0-20261017-Renamed after trimming.
+  This does not authorize modifying existing private recordings or deletion.
+- `pocs/synthetic_audio/` generates input, selects a unique marked row and
+  exports only explicitly designated synthetic audio. Keep private state out
+  of logs/serialization. Selection is UTF-8 only and requires caller deadlines.
+- TEXT ID hints survived the observed rename/trim; BLOB ID hints changed on
+  trim. Do not promote either name hint into a native ID contract. Preserve
+  before/after audio separately, and verify readback size plus SHA-256.
+- GUI Escape or Save may clear the search filter. Read AX with emit:false,
+  emit only synthetic names/control text, and recheck the filter after changes.
+- See docs/POC/2026-10-17-synthetic-recording.md and the related typed-metadata
+  and sidecar-signatures records. Phase 0 is unfinished; disposal is disabled.
