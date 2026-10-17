@@ -167,7 +167,7 @@ ruff check .
 ruff format --check .
 ty check
 mypy --strict
-pytest --cov=pocs/sqlite_probe --cov-branch \
+pytest --cov=pocs --cov-branch \
   --cov-report=xml --cov-fail-under=100
 ```
 
@@ -287,3 +287,16 @@ requested and authorized.
 - Validate Renovate with its strict config validator and Codecov YAML with
   its validation API. App activation is separate from committing settings;
   report verified uploads and bot activity separately from configuration.
+
+## 16. Host readiness PoC
+
+- `pocs/macos_inventory/` reads system/app version fields and counts only
+  immediate entries of an explicitly supplied source root. It never opens
+  source children or infers materialization/completeness from listability.
+- Root symlinks are rejected at the final path component with O_NOFOLLOW;
+  parents are supplied by the operator. Bound enumeration to 10,000 entries.
+- Keep source names/paths/content out of output and diagnostics. macOS
+  permission changes require explicit user authorization, not CI automation.
+- Record build-specific evidence and limits under `docs/POC/`. A successful
+  access retry does not prove ID stability, audio capture, or snapshot safety.
+- Coverage targets all of `pocs/`, including every newly added experiment.
