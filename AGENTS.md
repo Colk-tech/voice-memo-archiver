@@ -300,3 +300,19 @@ requested and authorized.
 - Record build-specific evidence and limits under `docs/POC/`. A successful
   access retry does not prove ID stability, audio capture, or snapshot safety.
 - Coverage targets all of `pocs/`, including every newly added experiment.
+
+## 17. Source layout and snapshot experiments
+
+- `pocs/source_layout/` opens directories only. Fixed suffix classifications
+  are hints, never verified formats, recording counts, or associations.
+  Keep names, arbitrary suffixes, file data and metadata values out of output.
+- Traverse using directory-relative descriptors and O_NOFOLLOW. The explicit
+  root's parents remain operator-trusted. Default bounds are 10,000 entries
+  and depth 4; depth truncation is counted, errors produce no partial report.
+  Enumeration is not an atomic snapshot or a materialization check.
+- `pocs/snapshot_trial/` creates all inputs in a temporary directory and
+  accepts no source path. Main-only copy and immutable reads can omit WAL
+  commits; a DB backup does not freeze external audio or sidecars.
+- These experiments do not authorize live SQLite access or full private DB
+  backups. Follow DESIGN consent/protection requirements and ADR-0007.
+  O-001, O-003 and O-005 remain unresolved; disposal stays disabled.

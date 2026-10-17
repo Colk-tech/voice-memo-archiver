@@ -1,6 +1,6 @@
 # Voice Memo Archiver
 
-現在は Phase 0 の SQLite スキーマ調査基盤のみ実装している。
+現在は Phase 0 の SQLite・ホスト・構成調査 PoC を実装している。
 使い捨ての PoC とテストは `pocs/` に隔離し、
 本番用の `src/` はまだ作成していない。
 Voice Memos の収集・保存・復元・削除機能は未実装。
@@ -75,3 +75,19 @@ root の最終要素が symlink の場合は追従せず、子ファイルは開
 この観測だけでは判定しない。合成 fixture のみを CI で使う。
 実機結果と未検証項目は
 [調査記録](docs/POC/2026-10-17-macos-inventory.md) を参照。
+
+## Source 構成と snapshot の調査
+
+```sh
+uv run python -m pocs.source_layout.cli --source-root /approved/source/root
+```
+
+directory のみを開き、DB / WAL / SHM / 音声 / sidecar の候補件数を
+固定拡張子で分類する。名前・内容は出力しない。既定は深さ 4、全体
+10,000 entry。symlink を追従せず、深さによる未訪問 directory は別計数、
+走査失敗・上限超過は終了コード 1。候補数は録音数や完全性の証拠ではない。
+
+[構成観測](docs/POC/2026-10-17-source-layout.md) と
+[合成 snapshot 実験](docs/POC/2026-10-17-snapshot-trial.md) を参照。
+実機の安全な snapshot 方式は未決。DB 本体のみのコピーや稼働中 DB の
+`immutable=1` 読取を採用しない。DB backup と音声の一貫性は別途検証する。
