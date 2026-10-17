@@ -18,7 +18,7 @@ uv run mypy --strict
 uv run tach check
 uv run pytest --cov=src/voice_memo_archiver --cov-branch \
   --cov-report=xml --cov-fail-under=100 -W error::ResourceWarning
-uv run yamllint .github/workflows/ci.yml
+uv run yamllint .github/workflows
 ```
 
 ## 隔離コピーの調査
@@ -44,3 +44,7 @@ CI は Linux/macOS で合成 DB のみを検査する。Codecov の Project/Patc
 連携、実機 E2E、branch protection の設定は未完了。ローカルと CI の
 カバレッジ閾値は 100%。依存境界は
 [ARCHITECTURE](docs/ARCHITECTURE.md) を参照。
+
+CI の発火条件は `.github/workflows/on-push.yml`、検査ジョブの定義は
+`.github/workflows/template-quality-ci.yml` に分離している。
+定義側は `workflow_call` で発火側から呼び出す。

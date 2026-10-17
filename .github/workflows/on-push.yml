@@ -1,0 +1,13 @@
+name: On Push - Code Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality-ci:
+    uses: ./.github/workflows/template-quality-ci.yml
