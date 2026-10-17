@@ -1,4 +1,4 @@
-"""Explicit-path offline probe composition root."""
+"""Explicit-path offline PoC CLI."""
 
 import argparse
 import json
@@ -6,7 +6,7 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
-from voice_memo_archiver.infrastructure.source.sqlite_probe import (
+from pocs.sqlite_probe.probe import (
     ProbeError,
     probe_database,
 )
@@ -33,3 +33,7 @@ def main() -> int:
         )
     )
     return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

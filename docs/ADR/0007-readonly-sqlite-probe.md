@@ -34,3 +34,11 @@ capture や ID 安定性を証明しない。fingerprint は schema の比較証
 次に build 別の承認済み実機観測を行い、native ID の安定性、raw metadata、
 録音中・編集中の一貫性、materialization、1 録音の無変換 export を測定する。
 O-001 は未解決で、Phase 0 の Go 判定は保留。削除は実装しない。
+
+## PoC 配置の更新
+
+使い捨ての調査コードとテストを `src/` から `pocs/sqlite_probe/` に移設。
+本番用の層構造、console script、パッケージ化、専用 tach 設定を撤去した。
+調査内容と安全性の扱いは維持し、実行は
+`uv run python -m pocs.sqlite_probe.cli --database PATH` とする。
+型検査・テスト・カバレッジは `pocs/` を対象とする。

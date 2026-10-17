@@ -167,8 +167,7 @@ ruff check .
 ruff format --check .
 ty check
 mypy --strict
-tach check
-pytest --cov=src/voice_memo_archiver --cov-branch \
+pytest --cov=pocs/sqlite_probe --cov-branch \
   --cov-report=xml --cov-fail-under=100
 ```
 
@@ -230,18 +229,21 @@ requested and authorized.
 ## 11. Phase 0 implementation context
 
 - Python 3.14 tooling is locked by `uv.lock`; use `uv sync --locked`.
-- The current CLI is `vma-source-probe --database PATH`, wired in bootstrap.
+- The current CLI is `uv run python -m pocs.sqlite_probe.cli --database PATH`.
   It is a generic SQLite schema probe, not a validated SourceReader.
 - Tests use synthetic SQLite databases only, including committed WAL state.
   Never substitute the user's live Voice Memos database in automated tests.
 - Snapshot data stays in memory. Output contains schema digest/count only;
   acquisition stays UNKNOWN and disposal stays disabled.
 - SQLite mode=ro may touch shared-memory files; use isolated approved copies.
-- Follow ADR-0007 for limitations and pending Phase 0 evidence. Keep
-  `docs/ARCHITECTURE.md` and `tach.toml` synchronized when adding layers.
+- Follow ADR-0007 for limitations and pending Phase 0 evidence. Production
+  architecture and dependency checks will be introduced with production code.
 
 ## 12. Disposable PoC lifecycle
 
+- Keep disposable PoC code and tests under `pocs/`, separate from `src/`.
+  Do not expose PoCs as production package entry points or add production
+  layers solely to host experiments.
 - Commit PoC code and its supporting tests in reviewable logical units.
   Record the experiment, environment, outcome, limitations, and unresolved
   questions without committing private source data.

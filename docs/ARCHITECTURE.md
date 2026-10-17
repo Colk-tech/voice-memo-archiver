@@ -1,18 +1,24 @@
-# 初期 PoC の依存境界
+# PoC と本番コードの分離
 
-今回実装した境界は `tach.toml` で検査する。
+使い捨ての調査コードとテストは `pocs/` に置く。
+現在は本番コードがなく、`src/` と本番パッケージは作成していない。
+ルートは uv の仮想プロジェクトとして開発依存のみを管理する。
 
-```mermaid
-graph LR
-    bootstrap --> infrastructure
-    infrastructure --> SQLite[Python sqlite3]
+```text
+pocs/
+  sqlite_probe/
+    cli.py          # 調査 CLI
+    probe.py        # SQLite 調査
+    test_cli.py
+    test_probe.py
+docs/
+  ADR/              # 調査判断・証拠・限界の記録
 ```
 
-- `bootstrap/probe.py`: 引数、JSON 出力、終了コード、具象依存の配線。
-- `infrastructure/source/sqlite_probe.py`: SQLite の調査処理。
-- `infrastructure` は他のプロジェクト層に依存しない。
-- domain / application は業務モデル導入時に追加する。
+PoC に本番の層構造や依存境界規約は適用しない。
+当初の bootstrap / infrastructure 分割と専用 tach 設定は撤去した。
+PoC が不要になったらコード・専用テスト・設定を削除し、調査記録は残す。
 
-今回の処理は汎用 SQLite の feasibility probe であり、録音を列挙する
-SourceReader の実装ではない。将来の CLI は application use case に委譲し、
-具象 adapter との配線のみ bootstrap が担当する。
+将来の本番コードは DESIGN §5.2 に従い `src/voice_memo_archiver/` に
+実装し、その時点で依存境界とパッケージ化を導入する。
+PoC の成果を本番契約として使う場合は、証拠に基づいて別途判断する。

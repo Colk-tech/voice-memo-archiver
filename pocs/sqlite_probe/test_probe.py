@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from voice_memo_archiver.infrastructure.source.sqlite_probe import (
+from pocs.sqlite_probe.probe import (
     ProbeError,
     _Deadline,
     probe_database,
@@ -70,12 +70,12 @@ def test_empty_database_is_not_a_valid_inventory(tmp_path: Path) -> None:
 def test_deadline(monkeypatch: pytest.MonkeyPatch) -> None:
     deadline = _Deadline()
     monkeypatch.setattr(
-        "voice_memo_archiver.infrastructure.source.sqlite_probe.monotonic",
+        "pocs.sqlite_probe.probe.monotonic",
         lambda: deadline.expires - 1,
     )
     deadline.check(0, 1, 2)
     monkeypatch.setattr(
-        "voice_memo_archiver.infrastructure.source.sqlite_probe.monotonic",
+        "pocs.sqlite_probe.probe.monotonic",
         lambda: deadline.expires,
     )
     with pytest.raises(ProbeError, match="timed out"):

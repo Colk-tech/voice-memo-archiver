@@ -1,6 +1,8 @@
 # Voice Memo Archiver
 
 現在は Phase 0 の SQLite スキーマ調査基盤のみ実装している。
+使い捨ての PoC とテストは `pocs/sqlite_probe/` に隔離し、
+本番用の `src/` はまだ作成していない。
 Voice Memos の収集・保存・復元・削除機能は未実装。
 設計は [DESIGN](docs/DESIGN.md)、判断と限界は
 [ADR-0007](docs/ADR/0007-readonly-sqlite-probe.md) を参照。
@@ -15,8 +17,7 @@ uv run ruff check .
 uv run ruff format --check .
 uv run ty check
 uv run mypy --strict
-uv run tach check
-uv run pytest --cov=src/voice_memo_archiver --cov-branch \
+uv run pytest --cov=pocs/sqlite_probe --cov-branch \
   --cov-report=xml --cov-fail-under=100 -W error::ResourceWarning
 uv run yamllint .github/workflows
 ```
@@ -24,7 +25,7 @@ uv run yamllint .github/workflows
 ## 隔離コピーの調査
 
 ```sh
-uv run vma-source-probe --database /path/to/approved-copy.sqlite
+uv run python -m pocs.sqlite_probe.cli --database /path/to/approved-copy.sqlite
 ```
 
 実機パスは自動探索しない。最初は合成 DB または承認済みの隔離コピーを
@@ -42,7 +43,7 @@ macOS build、ID 安定性、音声 export の実機検証は今後実施する�
 
 CI は Linux/macOS で合成 DB のみを検査する。Codecov の Project/Patch
 連携、実機 E2E、branch protection の設定は未完了。ローカルと CI の
-カバレッジ閾値は 100%。依存境界は
+カバレッジ閾値は 100%。本番コードとの分離は
 [ARCHITECTURE](docs/ARCHITECTURE.md) を参照。
 
 CI の発火条件は `.github/workflows/on-push.yml`、検査ジョブの定義は

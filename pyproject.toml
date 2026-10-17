@@ -1,18 +1,14 @@
 [project]
 name = "voice-memo-archiver"
 version = "0.1.0"
-description = "Read-only Voice Memos feasibility tools"
+description = "Read-only Voice Memos feasibility experiments"
 requires-python = ">=3.14"
 
-[project.scripts]
-vma-source-probe = "voice_memo_archiver.bootstrap.probe:main"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[tool.uv]
+package = false
 
 [dependency-groups]
-dev = ["mypy", "pytest", "pytest-cov", "ruff", "tach", "ty", "yamllint"]
+dev = ["mypy", "pytest", "pytest-cov", "ruff", "ty", "yamllint"]
 
 [tool.ruff]
 target-version = "py314"
@@ -23,10 +19,11 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.mypy]
 strict = true
-files = ["src"]
+files = ["pocs"]
 
 [tool.pytest.ini_options]
-testpaths = ["src"]
+testpaths = ["pocs"]
+pythonpath = ["."]
 
 [tool.coverage.run]
 omit = ["*/test_*.py"]
