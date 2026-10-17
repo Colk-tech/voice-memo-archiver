@@ -316,3 +316,18 @@ requested and authorized.
 - These experiments do not authorize live SQLite access or full private DB
   backups. Follow DESIGN consent/protection requirements and ADR-0007.
   O-001, O-003 and O-005 remain unresolved; disposal stays disabled.
+
+## 18. Authorized raw DB capture experiment
+
+- The user authorized read-only DB copies for this investigation. Keep real
+  copies encrypted and isolated outside Git; never use them as test fixtures.
+- `pocs/sqlite_capture/` opens source DB/WAL with raw O_RDONLY descriptors,
+  never SQLite. Do not open/copy source SHM. SQLite touches isolated copies
+  only. Retain the 64 MiB per-file limit, pairwise repeated reads, inode/stat
+  checks, rollback-journal rejection and conservative WAL checksum checks.
+- The caller must prepare and verify encryption, source selection, isolation
+  and cleanup. The API does not enforce encryption or provide crash cleanup.
+  Real observations used ephemeral AES-256 images and removed them afterward.
+- Fixed schema/type/ID-name-hint counts are not raw metadata preservation,
+  ID stability, latest-state proof or an atomic audio/sidecar snapshot.
+  See docs/POC/2026-10-17-readonly-db-capture.md for evidence and limitations.

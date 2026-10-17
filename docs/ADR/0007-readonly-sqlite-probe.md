@@ -68,3 +68,18 @@ O-001 / O-003 / O-005 と Phase 0 Go 判定は未決のままとする。
 参照: [SQLite WAL](https://www.sqlite.org/wal.html)、
 [URI immutable](https://www.sqlite.org/uri.html)、
 [Backup API](https://www.sqlite.org/backup.html)。
+
+## 明示同意後の実機コピー調査
+
+ユーザーが読み取り専用 DB コピーを明示許可したため、
+[取得記録](../POC/2026-10-17-readonly-db-capture.md) の手順を実施した。
+元 DB / WAL は raw O_RDONLY で読み、2 回読取・属性比較・WAL checksum
+検証の後、AES-256 の repo 外隔離コピーだけを SQLite で検査する。
+元の SHM は開かない。コピー側は quick_check 成功、構造集計を得た。
+実機 DB / WAL の観測前後のバイト列は一致し、一時コピーは削除した。
+
+この限定 PoC を許可済み実機観測として記録する。2 回一致と quick_check
+は atomic snapshot、最新性、音声 / sidecar の整合性の証明ではない。
+本番取得方式の採用、native ID 安定性、raw metadata 保全は引き続き未決。
+過去の「実機アクセスなし」「snapshot メモリのみ」は当時の実施範囲であり、
+今回の明示同意後の暗号化一時コピーを禁止する恒久方針ではない。
