@@ -331,3 +331,20 @@ requested and authorized.
 - Fixed schema/type/ID-name-hint counts are not raw metadata preservation,
   ID stability, latest-state proof or an atomic audio/sidecar snapshot.
   See docs/POC/2026-10-17-readonly-db-capture.md for evidence and limitations.
+
+## 19. Metadata aggregate profiling
+
+- `pocs/metadata_profile/` profiles protected copies only. Aggregate in memory
+  with trusted_schema=OFF, temp_store=MEMORY, query_only=ON and deadlines.
+  Keep table/column/row/cell/text bounds and fixed, sanitized diagnostics.
+- FileHints contains private basenames in memory and must never be logged,
+  serialized or committed. Preserve duplicate names for ambiguity counts;
+  source file contents are not opened. Depth truncation fails the traversal.
+- ID-name hints and observed BINARY DISTINCT counts do not prove native ID
+  stability. Slots are observation-local positions, never persistent IDs.
+- Filename matches count cells and possible file entries, not distinct
+  recordings or verified associations. Zero matches are not missing proof.
+- Type counts are not raw metadata preservation. Do not interpret SQL NULL
+  as missing/unsupported/not_applicable without separate evidence.
+- Keep rename/edit experiments and synthetic recording export separate from
+  read-only observations. No source modifications are authorized by this PoC.
