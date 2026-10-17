@@ -134,3 +134,39 @@ Ruff、ty、mypy strict、Markdown / YAML / workflow lint も成功した。
 materialization、DB と全音声 / sidecar の atomic snapshot、別ホストでの
 復元は未検証。合成録音は削除せずアプリ内に残している。
 O-001 / O-002 / O-003 / O-005、完全性の契約、Phase 0 Go 判定は未決のまま。
+
+## 比較条件の補強（合成テストのみ）
+
+追加調査で、旧比較 API は table / column の対応を検査せず、観測内の
+値の位置だけを比較することを確認した。別テーブル・列名変更・宣言型変更・
+未知列追加の 4 ケースで、比較を拒否しない反例を修正前に再現した。
+過去の実機結果を新しい比較条件で再検証したものではない。
+
+選択した行には、table 名、列順付き column 名、CREATE TABLE の SQL bytes、
+合成選択 prefix を private な比較 context として付ける。両比較 API は
+context がない場合や一致しない場合、値を含まない固定診断で拒否する。
+SQL bytes は SQL 側で 1 MiB 上限を確認してから Python へ返す。
+名前・SQL・prefix は出力せず、context も repr の対象にしない。
+
+```mermaid
+flowchart LR
+    S[合成行を一意に選択] --> C{schema と選択条件が一致}
+    C -->|yes| V[型付き値を比較]
+    C -->|no / unknown| R[固定診断で拒否]
+```
+
+context は SQL 表現まで完全一致を要求する保守的な条件である。
+意味的に等価な schema でも SQL 表現が違えば拒否する。table slot は
+観測内の位置なので、一致条件には使わない。無関係なテーブル追加で slot
+だけが動く場合にも同じ行の比較が継続できることを合成テストで確認した。
+
+この context は同じ source / account、同じ録音、native ID の証明ではない。
+呼出側で同じ許可済み Source の観測を組にする必要がある。同じ prefix で
+録音が置き換わる可能性も解決しない。schema は選択した table の比較条件
+に限られ、関連 table / index / trigger / sidecar の保全や完全性を示さない。
+実機の再起動・同期後の ID 安定性と record 保全 container は今後の課題。
+
+補強後は対象 36 テスト、全体 270 テストが成功し、全 `pocs/` の分岐込み
+coverage は 100%。Ruff check / format、ty、mypy strict、変更 Markdown の
+lint、diff check が成功した。サブエージェントも差分を独立レビューし、
+対象 36 テストの成功を確認した。実アカウントへの追加アクセスは行わない。

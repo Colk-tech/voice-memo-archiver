@@ -372,3 +372,16 @@ requested and authorized.
   emit only synthetic names/control text, and recheck the filter after changes.
 - See docs/POC/2026-10-17-synthetic-recording.md and the related typed-metadata
   and sidecar-signatures records. Phase 0 is unfinished; disposal is disabled.
+
+## 21. Synthetic observation comparison guards
+
+- Both synthetic comparison APIs require matching private contexts: selected
+  table name, ordered column names, CREATE TABLE SQL bytes and selection
+  prefix. Missing or changed contexts fail with a fixed diagnostic.
+- Schema SQL is bounded to 1 MiB before returning it from SQLite. Contexts
+  contain private names/SQL; never log, serialize or print them.
+- Table slots remain observation-local and are not comparison identities.
+  The caller must pair observations from the same approved Source/account;
+  matching contexts do not prove native ID or recording correspondence.
+- The guard was verified with synthetic databases only. It does not
+  retroactively revalidate the earlier live observations or resolve Phase 0.
