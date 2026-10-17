@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices"],
+  "timezone": "Asia/Tokyo",
+  "assignees": ["Colk-tech"],
+  "labels": ["enhancement"],
+  "semanticCommits": "enabled",
+  "automerge": false,
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 5,
+  "major": {
+    "dependencyDashboardApproval": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "description": "Wait before adopting newly released PyPI packages",
+      "matchDatasources": ["pypi"],
+      "minimumReleaseAge": "3 days",
+      "internalChecksFilter": "strict"
+    }
+  ]
+}

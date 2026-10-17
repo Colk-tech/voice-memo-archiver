@@ -11,3 +11,6 @@ permissions:
 jobs:
   quality-ci:
     uses: ./.github/workflows/template-quality-ci.yml
+    permissions:
+      contents: read
+      id-token: write
