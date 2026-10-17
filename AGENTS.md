@@ -415,3 +415,19 @@ requested and authorized.
 - No arbitrary-input bounds/deadline or cross-file snapshot is provided.
   SQL-observed values are not SQLite physical storage or pre-SQL bit patterns.
   Evidence is counts/status only; failure returns no partial report.
+
+## 24. Phase 0 final assessment
+
+- The canonical final assessment is `docs/POC/PHASE0-REPORT.md`. This
+  feasibility investigation/report is closed with No-Go for adopting the
+  current production Source adapter or proceeding to Phase 1. Technical
+  acceptance conditions are unmet; this is not a successful Phase 0 gate.
+- O-001 / O-002 / O-003 / O-005 remain unresolved. Missing evidence is not
+  proof of permanent impossibility. Keep acquisition UNKNOWN and disposal
+  disabled. Reassess only against the report's concrete evidence conditions.
+- Earlier PoC notes retain their observation-time unfinished/pending status.
+  Do not silently promote synthetic framing, SQL tests, candidate IDs or
+  local decode into live capture completeness or a native identity contract.
+- The final recheck used existing synthetic exports and synthetic DB trials
+  only. Prior encrypted-copy cleanup is recorded evidence, not a new scan.
+  Retain the documented AX-name exposure caveat; do not claim zero exposure.
