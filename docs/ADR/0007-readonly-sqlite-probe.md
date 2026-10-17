@@ -50,3 +50,21 @@ macOS 27.0.1 / 26A434、Voice Memos 4.0 / 1438 で保存先へのアクセスを
 調査コードは `pocs/macos_inventory/`、環境と証拠・限界は
 [観測記録](../POC/2026-10-17-macos-inventory.md) に記録する。
 今回も native ID や DB / 音声の snapshot 一貫性は未検証のままである。
+
+## 構成調査と snapshot 反例
+
+[構成観測](../POC/2026-10-17-source-layout.md) で通常ファイルを開かず、
+固定拡張子の候補件数を記録した。実機 DB の SQLite 接続は行っていない。
+[合成実験](../POC/2026-10-17-snapshot-trial.md) では main DB 単独 copy と
+`immutable=1` が WAL の commit を欠落し、backup API が取得すること、
+DB backup と外部ファイルの組が不整合になり得ることを確認した。
+
+稼働中 Source の本体単独 copy と `immutable=1` は取得方式に採用しない。
+後者の不変性の前提を実機で立証していない。backup API も SHM 副作用と
+DB 外の整合性が未解決であり、実機の安全な取得方式として採用していない。
+実機 DB 全体の保全は明示同意と暗号化・分離を要する。今回実行していない。
+O-001 / O-003 / O-005 と Phase 0 Go 判定は未決のままとする。
+
+参照: [SQLite WAL](https://www.sqlite.org/wal.html)、
+[URI immutable](https://www.sqlite.org/uri.html)、
+[Backup API](https://www.sqlite.org/backup.html)。
