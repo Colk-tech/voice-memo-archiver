@@ -2,12 +2,14 @@
 
 import sqlite3
 from contextlib import closing
+from dataclasses import replace
 
 import pytest
 
 from pocs.synthetic_audio import observe
 
 PREFIX = "VMA-Phase0-synthetic_%'"
+CONTEXT = observe.ComparisonContext("synthetic", ("uuid",), b"synthetic SQL", PREFIX)
 
 
 def _setup(connection: sqlite3.Connection) -> None:
@@ -86,9 +88,9 @@ def test_nontext_paths_and_nulls() -> None:
         assert state is not None
         assert state.path_values == ()
         assert not observe.compare_states(state, state)["id_hints_unchanged"]
-        empty = observe.SyntheticState((), (), (), 0)
+        empty = observe.SyntheticState((), (), (), 0, state.context)
         assert not observe.compare_states(empty, empty)["id_hints_unchanged"]
-        changed = observe.SyntheticState((), (b"tnew",), ("changed",), 0)
+        changed = observe.SyntheticState((), (b"tnew",), ("changed",), 0, state.context)
         assert not observe.compare_states(state, changed)["path_hints_unchanged"]
 
 
@@ -110,17 +112,25 @@ def test_empty_database_and_sql_error() -> None:
 
 
 def test_changed_ids() -> None:
-    before = observe.SyntheticState((), (b"tbefore",), (), 0)
-    after = observe.SyntheticState((), (b"tafter",), (), 0)
+    before = observe.SyntheticState((), (b"tbefore",), (), 0, CONTEXT)
+    after = observe.SyntheticState((), (b"tafter",), (), 0, CONTEXT)
     assert not observe.compare_states(before, after)["id_hints_unchanged"]
 
 
 def test_per_slot_id_changes() -> None:
     before = observe.SyntheticState(
-        (), (b"tprivate-one", b"bprivate-two", b"i" + bytes(8), b"r" + bytes(8)), (), 0
+        (),
+        (b"tprivate-one", b"bprivate-two", b"i" + bytes(8), b"r" + bytes(8)),
+        (),
+        0,
+        CONTEXT,
     )
     after = observe.SyntheticState(
-        (), (b"tprivate-one", b"tchanged", b"i" + bytes(8), b"r" + bytes(8)), (), 0
+        (),
+        (b"tprivate-one", b"tchanged", b"i" + bytes(8), b"r" + bytes(8)),
+        (),
+        0,
+        CONTEXT,
     )
     result = observe.compare_id_hints(before, after)
     assert result == (
@@ -134,7 +144,7 @@ def test_per_slot_id_changes() -> None:
 
 @pytest.mark.parametrize("encoded", [b"n", b"t", b"b"])
 def test_identical_absent_ids_are_invalid(encoded: bytes) -> None:
-    state = observe.SyntheticState((), (encoded,), (), 0)
+    state = observe.SyntheticState((), (encoded,), (), 0, CONTEXT)
     assert not observe.compare_id_hints(state, state)[0].unchanged
 
 
@@ -150,8 +160,8 @@ def test_identical_absent_ids_are_invalid(encoded: bytes) -> None:
 def test_invalid_slot_comparison(
     old: tuple[bytes, ...], new: tuple[bytes, ...]
 ) -> None:
-    before = observe.SyntheticState((), old, (), 0)
-    after = observe.SyntheticState((), new, (), 0)
+    before = observe.SyntheticState((), old, (), 0, CONTEXT)
+    after = observe.SyntheticState((), new, (), 0, CONTEXT)
     with pytest.raises(
         observe.ObservationError, match="^Synthetic observation failed$"
     ):
@@ -159,7 +169,7 @@ def test_invalid_slot_comparison(
 
 
 def test_no_id_slots() -> None:
-    state = observe.SyntheticState((), (), (), 0)
+    state = observe.SyntheticState((), (), (), 0, CONTEXT)
     assert observe.compare_id_hints(state, state) == ()
 
 
@@ -172,3 +182,98 @@ def test_utf16_database_is_rejected(encoding: str) -> None:
             observe.ObservationError, match="^Synthetic observation failed$"
         ):
             observe.find_synthetic(connection, PREFIX)
+
+
+@pytest.mark.parametrize(
+    "ddl",
+    [
+        "CREATE TABLE renamed (uuid, filepath, title)",
+        "CREATE TABLE recordings (recordingid, filepath, title)",
+        "CREATE TABLE recordings (uuid TEXT, filepath, title)",
+        "CREATE TABLE recordings (uuid, filepath, title, unknown)",
+    ],
+)
+def test_comparison_rejects_different_layouts(ddl: str) -> None:
+    with (
+        closing(sqlite3.connect(":memory:")) as first,
+        closing(sqlite3.connect(":memory:")) as second,
+    ):
+        first.execute("CREATE TABLE recordings (uuid, filepath, title)")
+        first.execute("INSERT INTO recordings VALUES ('same','same',?)", (PREFIX,))
+        second.execute(ddl)
+        table = "renamed" if "renamed" in ddl else "recordings"
+        second.execute(
+            f"INSERT INTO {table} ("
+            + ("recordingid" if "recordingid" in ddl else "uuid")
+            + ",filepath,title) VALUES ('same','same',?)",
+            (PREFIX,),
+        )
+        before = observe.find_synthetic(first, PREFIX)
+        after = observe.find_synthetic(second, PREFIX)
+        assert before is not None and after is not None
+        for compare in (observe.compare_states, observe.compare_id_hints):
+            with pytest.raises(
+                observe.ObservationError, match="^Synthetic observation failed$"
+            ):
+                compare(before, after)
+
+
+@pytest.mark.parametrize("missing_before", [False, True])
+def test_missing_context_is_not_comparable(missing_before: bool) -> None:
+    state = observe.SyntheticState((), (b"tvalue",), (), 0, CONTEXT)
+    unknown = replace(state, context=None)
+    pair = (unknown, state) if missing_before else (state, unknown)
+    for compare in (observe.compare_states, observe.compare_id_hints):
+        with pytest.raises(
+            observe.ObservationError, match="^Synthetic observation failed$"
+        ):
+            compare(*pair)
+
+
+@pytest.mark.parametrize(
+    "context",
+    [
+        replace(CONTEXT, column_names=("other",)),
+        replace(CONTEXT, selection_prefix=PREFIX + "different"),
+    ],
+)
+def test_context_fields_are_checked(context: observe.ComparisonContext) -> None:
+    before = observe.SyntheticState((), (b"tvalue",), (), 0, CONTEXT)
+    after = replace(before, context=context)
+    for compare in (observe.compare_states, observe.compare_id_hints):
+        with pytest.raises(observe.ObservationError):
+            compare(before, after)
+
+
+def test_table_slots_are_local_and_context_is_private() -> None:
+    with closing(sqlite3.connect(":memory:")) as connection:
+        _setup(connection)
+        before = observe.find_synthetic(connection, PREFIX)
+        connection.execute("CREATE TABLE aaa_unrelated (value)")
+        after = observe.find_synthetic(connection, PREFIX)
+        assert before is not None and after is not None
+        assert before.table_slot != after.table_slot
+        assert all(observe.compare_states(before, after).values())
+        assert observe.compare_id_hints(before, after)[0].unchanged
+        assert before.context is not None
+        for secret in (PREFIX, "quoted", "CREATE", "uuid"):
+            assert secret not in repr(before.context)
+            assert secret not in repr(before)
+
+
+@pytest.mark.parametrize("difference", [-1, 0])
+def test_schema_size_boundary(difference: int, monkeypatch: pytest.MonkeyPatch) -> None:
+    with closing(sqlite3.connect(":memory:")) as connection:
+        _setup(connection)
+        (schema_length,) = connection.execute(
+            "SELECT length(CAST(sql AS BLOB)) FROM sqlite_schema WHERE name=?",
+            ('quoted"table',),
+        ).fetchone()
+        monkeypatch.setattr(observe, "MAX_SCHEMA_BYTES", schema_length + difference)
+        if difference < 0:
+            with pytest.raises(
+                observe.ObservationError, match="^Synthetic observation failed$"
+            ):
+                observe.find_synthetic(connection, PREFIX)
+        else:
+            assert observe.find_synthetic(connection, PREFIX) is not None

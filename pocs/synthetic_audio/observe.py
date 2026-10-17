@@ -9,10 +9,19 @@ MAX_TABLES = 64
 MAX_COLUMNS = 512
 MAX_ROWS = 10_000
 MAX_CELL_BYTES = 1024 * 1024
+MAX_SCHEMA_BYTES = 1024 * 1024
 
 
 class ObservationError(Exception):
     """Sanitized failure without private values or identifiers."""
+
+
+@dataclass(frozen=True, repr=False)
+class ComparisonContext:
+    table_name: str
+    column_names: tuple[str, ...]
+    table_sql: bytes
+    selection_prefix: str
 
 
 @dataclass(frozen=True, repr=False)
@@ -21,6 +30,7 @@ class SyntheticState:
     id_values: tuple[bytes, ...]
     path_values: tuple[str, ...]
     table_slot: int
+    context: ComparisonContext | None = None
 
 
 @dataclass(frozen=True)
@@ -102,8 +112,21 @@ def _find(connection: sqlite3.Connection, prefix: str) -> SyntheticState | None:
                 for i in paths
                 if values[i][:1] == b"t"
             )
+            # Bound the schema bytes in SQL before returning them to Python.
+            (table_sql,) = connection.execute(
+                "SELECT CASE WHEN length(CAST(sql AS BLOB)) <= ? "
+                "THEN CAST(sql AS BLOB) END FROM main.sqlite_schema "
+                "WHERE type='table' AND name=?",
+                (MAX_SCHEMA_BYTES, table),
+            ).fetchone()
+            if not isinstance(table_sql, bytes):
+                raise ValueError
             result = SyntheticState(
-                values, tuple(values[i] for i in ids), path_values, table_slot
+                values,
+                tuple(values[i] for i in ids),
+                path_values,
+                table_slot,
+                ComparisonContext(table, tuple(names), table_sql, prefix),
             )
     return result
 
@@ -123,8 +146,18 @@ def find_synthetic(
         raise ObservationError("Synthetic observation failed") from None
 
 
+def _require_comparable(before: SyntheticState, after: SyntheticState) -> None:
+    if before.context is None or before.context != after.context:
+        raise ObservationError("Synthetic observation failed")
+
+
 def compare_states(before: SyntheticState, after: SyntheticState) -> dict[str, bool]:
-    """Report fixed booleans only; name hints are not proven native IDs."""
+    """Compare matching layouts/prefixes from the caller's same approved Source.
+
+    A matching context is not proof of native identity or source/account
+    correspondence. Local table slots may change between observations.
+    """
+    _require_comparable(before, after)
     valid_ids = bool(before.id_values) and all(
         value not in (b"n", b"t", b"b") for value in before.id_values
     )
@@ -139,6 +172,7 @@ def compare_id_hints(
     before: SyntheticState, after: SyntheticState
 ) -> tuple[IdHintChange, ...]:
     """Compare observation-local ID positions without returning private bytes."""
+    _require_comparable(before, after)
     types = {b"n": "null", b"i": "integer", b"r": "real", b"t": "text", b"b": "blob"}
     if len(before.id_values) != len(after.id_values):
         raise ObservationError("Synthetic observation failed")
