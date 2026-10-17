@@ -19,7 +19,7 @@ uv run ty check
 uv run mypy --strict
 uv run pytest --cov=pocs/sqlite_probe --cov-branch \
   --cov-report=xml --cov-fail-under=100 -W error::ResourceWarning
-uv run yamllint .github/workflows
+uv run yamllint .github/workflows codecov.yml .yamllint
 ```
 
 ## 隔離コピーの調査
@@ -41,11 +41,24 @@ SQLite が共有メモリを作成・更新する可能性があるため、デ�
 無変更は保証しない。この調査結果は録音の完全取得や復元の証明ではない。
 macOS build、ID 安定性、音声 export の実機検証は今後実施する。
 
-CI は Linux/macOS で合成 DB のみを検査する。Codecov の Project/Patch
-連携、実機 E2E、branch protection の設定は未完了。ローカルと CI の
-カバレッジ閾値は 100%。本番コードとの分離は
+CI は Linux/macOS で合成 DB のみを検査する。ローカルと CI の
+分岐込みカバレッジ閾値は 100%。実機 E2E と branch protection は未設定。
+本番コードとの分離は
 [ARCHITECTURE](docs/ARCHITECTURE.md) を参照。
 
 CI の発火条件は `.github/workflows/on-push.yml`、検査ジョブの定義は
 `.github/workflows/template-quality-ci.yml` に分離している。
 定義側は `workflow_call` で発火側から呼び出す。
+
+## 依存更新とカバレッジ
+
+`renovate.json` で Python 依存、uv.lock、GitHub Actions の更新を管理する。
+lock file maintenance を有効にし、メジャー更新は Dashboard で承認する。
+更新 PR は `Colk-tech` に割り当て、既存の `enhancement` ラベルを付ける。
+自動マージは無効。Renovate App でこのリポジトリを対象にする必要がある。
+
+Codecov には Linux CI から `coverage.xml` のみを OIDC で送信する。
+アップロード失敗は CI を失敗させ、Project / Patch の閾値は 100% とする。
+トークンの登録は不要。実行結果は
+[Codecov](https://app.codecov.io/gh/Colk-tech/voice-memo-archiver) で確認する。
+GitHub の status 連携には Codecov App のリポジトリへの導入も必要。

@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   quality:
@@ -13,8 +14,8 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
-      - uses: astral-sh/setup-uv@c97f06e356bcca1b426f396ef93ec35ce149ce7b
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884  # v10.3.0
         with:
           version: "0.13.1"
           python-version: "3.14"
@@ -26,4 +27,13 @@ jobs:
       - run: >-
           uv run pytest --cov=pocs/sqlite_probe --cov-branch
           --cov-report=xml --cov-fail-under=100 -W error::ResourceWarning
-      - run: uv run yamllint .github/workflows
+      - run: uv run yamllint .github/workflows codecov.yml .yamllint
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5  # v7.1.1
+        with:
+          files: ./coverage.xml
+          disable_search: true
+          disable_telem: true
+          fail_ci_if_error: true
+          use_oidc: true

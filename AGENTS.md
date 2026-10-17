@@ -273,3 +273,17 @@ requested and authorized.
   the final change. Do not invent new labels merely to classify a PR.
 - Set the assignee and labels when creating the PR and verify the resulting
   metadata before delivery.
+
+## 15. Dependency updates and coverage services
+
+- Keep Renovate settings in `renovate.json`; dependency PRs use the same
+  assignee and existing-label conventions as human-created PRs.
+- Preserve release-version comments beside action commit pins so Renovate
+  can update them. Keep lock-file maintenance enabled and automerge disabled.
+- Codecov uses OIDC from the Linux quality job. Keep caller and callee
+  `id-token: write` permissions aligned and upload only `coverage.xml`.
+- Keep local branch coverage and Codecov project/patch thresholds at 100%.
+  Upload failures must fail CI; never hide them to make onboarding green.
+- Validate Renovate with its strict config validator and Codecov YAML with
+  its validation API. App activation is separate from committing settings;
+  report verified uploads and bot activity separately from configuration.

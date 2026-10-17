@@ -1,5 +1,7 @@
 extends: default
 rules:
+  line-length:
+    max: 100
   document-start: disable
   truthy:
     allowed-values: ['on', 'true', 'false']
