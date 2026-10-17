@@ -110,3 +110,7 @@ DB の構造集計を確認できたが、Phase 0 は未完了である。
 TEXT ID 候補が名称変更・短縮後も一致し、BLOB ID 候補は編集で変化した。
 無変換コピーの SHA-256 / size は一致したが、native ID の契約や忠実な
 Voice Memos 復元を確認したものではない。削除は引き続き無効である。
+
+[合成 record envelope](docs/POC/2026-10-17-record-envelope.md) では、型付き値を
+schema・encoding・観測内の位置と結び付け、メモリ内の可逆性と不正形式の
+拒否を検証する。実 DB の採取・永続保全・保存形式の採用は対象外である。
