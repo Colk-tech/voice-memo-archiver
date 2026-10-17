@@ -262,3 +262,12 @@ requested and authorized.
 - Call local templates through job-level `uses`. Preserve least-privilege
   permissions and commit-SHA pins for external actions.
 - Lint the entire `.github/workflows` directory when changing workflows.
+
+## 14. Pull request metadata
+
+- When creating a PR, assign the requesting user; for this repository's
+  current workflow, use `Colk-tech`.
+- Inspect the repository's existing labels and apply those appropriate to
+  the final change. Do not invent new labels merely to classify a PR.
+- Set the assignee and labels when creating the PR and verify the resulting
+  metadata before delivery.
