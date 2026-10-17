@@ -91,3 +91,9 @@ directory のみを開き、DB / WAL / SHM / 音声 / sidecar の候補件数を
 [合成 snapshot 実験](docs/POC/2026-10-17-snapshot-trial.md) を参照。
 実機の安全な snapshot 方式は未決。DB 本体のみのコピーや稼働中 DB の
 `immutable=1` 読取を採用しない。DB backup と音声の一貫性は別途検証する。
+
+明示同意の後、元 DB / WAL を raw read-only で読み、AES-256 の repo 外
+隔離コピーだけを SQLite で検査した。
+[取得記録](docs/POC/2026-10-17-readonly-db-capture.md) に結果を示す。
+`pocs/sqlite_capture/` の API は操作者による暗号化・隔離・cleanup を要する。
+DB の構造集計を確認できたが、Phase 0 は未完了である。

@@ -9,6 +9,7 @@ pocs/
   macos_inventory/  # ホストとアクセス可否の調査＋同居テスト
   source_layout/    # 内容を読まない構成候補の分類＋同居テスト
   snapshot_trial/   # 合成入力のみの WAL / 外部ファイル反例
+  sqlite_capture/   # 許可された raw DB/WAL copy と隔離検査
   sqlite_probe/
     cli.py          # 調査 CLI
     probe.py        # SQLite 調査
