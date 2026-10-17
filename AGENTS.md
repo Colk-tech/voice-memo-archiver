@@ -400,3 +400,18 @@ requested and authorized.
 - This is a synthetic-only disposable format experiment, not an adopted
   record archive or full schema capture. No checksum/authentication is
   included. Completeness stays UNKNOWN, restoration UNTESTED, disposal off.
+
+## 23. Synthetic SQL-to-record trial
+
+- `pocs.record_trial.trial.run_trial()` has no input parameters and creates
+  fixed synthetic in-memory SQLite DBs only. Do not add a path, connection
+  or private-data input to turn it into a general Source reader.
+- Extract each row's storage classes and values in the same SELECT; cast
+  TEXT to BLOB. Check table SQL and cid-ordered table_xinfo, including
+  generated columns, against independent seed-derived expectations.
+- Verify expected record contents and encode/decode/re-encode bytes,
+  retaining duplicate rows. Local slots and fixed synthetic observation
+  labels do not establish native or cross-observation identities.
+- No arbitrary-input bounds/deadline or cross-file snapshot is provided.
+  SQL-observed values are not SQLite physical storage or pre-SQL bit patterns.
+  Evidence is counts/status only; failure returns no partial report.

@@ -113,3 +113,10 @@ sidecar の取得状態は確定していない。値・名前は出力せず、
 指定の schema / encoding / 観測内位置を長さ付き形式で往復した。DB を読む
 API は追加せず、合成入力のみを用いる。保存形式の採用判断や実機 metadata
 保全の証拠とはしない。取得完全性は UNKNOWN、Phase 0 Go は保留のまま。
+
+## 固定合成 SQLite と record container の対応
+
+[SQL-to-record trial](../POC/2026-10-17-sql-record-trial.md) は、引数なしで
+自作メモリ DB を生成し、schema / 列 / 同一行の型付き値を seed の期待値と
+照合して envelope を往復する。実データ入力や汎用 reader は追加しない。
+SQL 観測値の対応だけの証拠とし、Phase 0 Go / 完全取得の判断は保留する。

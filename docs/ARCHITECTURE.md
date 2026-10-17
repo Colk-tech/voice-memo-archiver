@@ -13,6 +13,7 @@ pocs/
   metadata_profile/ # 隔離コピー上の ID・格納型・名前一致候補
   raw_metadata/     # SQL 値の型付き往復検証
   record_envelope/  # 合成 record container のメモリ内往復検証
+  record_trial/     # 自作メモリ SQLite から record への対応検証
   sidecar_probe/    # 固定拡張子の read-only 署名候補調査
   synthetic_audio/  # 合成入力・一意な対象選択・raw export
   sqlite_probe/
