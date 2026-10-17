@@ -254,3 +254,11 @@ requested and authorized.
   a separate evidence-backed decision.
 - Section 3 and the architecture-sync guidance in section 11 apply to
   production code; they do not require architecture work for disposable PoCs.
+
+## 13. CI workflow conventions
+
+- Keep event triggers in `.github/workflows/on-*.yml` and reusable job
+  definitions in `.github/workflows/template-*.yml` with `workflow_call`.
+- Call local templates through job-level `uses`. Preserve least-privilege
+  permissions and commit-SHA pins for external actions.
+- Lint the entire `.github/workflows` directory when changing workflows.
