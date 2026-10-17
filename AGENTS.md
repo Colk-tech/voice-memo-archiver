@@ -239,3 +239,18 @@ requested and authorized.
 - SQLite mode=ro may touch shared-memory files; use isolated approved copies.
 - Follow ADR-0007 for limitations and pending Phase 0 evidence. Keep
   `docs/ARCHITECTURE.md` and `tach.toml` synchronized when adding layers.
+
+## 12. Disposable PoC lifecycle
+
+- Commit PoC code and its supporting tests in reviewable logical units.
+  Record the experiment, environment, outcome, limitations, and unresolved
+  questions without committing private source data.
+- Disposable PoC code need not follow the production architecture. Prefer
+  focused experiments over speculative ports, layers, or reusable frameworks.
+  This exception does not relax source safety, privacy, or honest reporting.
+- Remove obsolete PoC code and its dedicated tests/configuration once their
+  purpose ends. Commit the removal and retain useful findings in documents
+  and Git history. Do not promote experiments to production contracts without
+  a separate evidence-backed decision.
+- Section 3 and the architecture-sync guidance in section 11 apply to
+  production code; they do not require architecture work for disposable PoCs.
