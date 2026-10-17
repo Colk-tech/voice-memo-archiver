@@ -1,6 +1,10 @@
 # Voice Memo Archiver
 
-現在は Phase 0 の SQLite・ホスト・構成調査 PoC を実装している。
+Phase 0 の実行可能性評価を
+[最終報告書](docs/POC/PHASE0-REPORT.md) として確定した。
+現方式の採用・Phase 1 移行は、必須証拠不足により **No-Go**。
+調査・報告の終結であり、技術条件の達成ではない。削除は引き続き無効。
+
 使い捨ての PoC とテストは `pocs/` に隔離し、
 本番用の `src/` はまだ作成していない。
 Voice Memos の収集・保存・復元・削除機能は未実装。
