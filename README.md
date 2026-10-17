@@ -97,3 +97,8 @@ directory のみを開き、DB / WAL / SHM / 音声 / sidecar の候補件数を
 [取得記録](docs/POC/2026-10-17-readonly-db-capture.md) に結果を示す。
 `pocs/sqlite_capture/` の API は操作者による暗号化・隔離・cleanup を要する。
 DB の構造集計を確認できたが、Phase 0 は未完了である。
+
+続く [ID・格納型の観測](docs/POC/2026-10-17-metadata-profile.md) では、
+隔離コピーで NULL / 空値 / DISTINCT と実際の格納型を集計し、音声名との
+一致候補を数えた。名前・値は出力しない。ID 安定性、音声 / sidecar の
+関連性、raw metadata の保全を確認したものではない。

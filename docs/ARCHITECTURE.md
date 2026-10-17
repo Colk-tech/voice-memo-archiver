@@ -10,6 +10,7 @@ pocs/
   source_layout/    # 内容を読まない構成候補の分類＋同居テスト
   snapshot_trial/   # 合成入力のみの WAL / 外部ファイル反例
   sqlite_capture/   # 許可された raw DB/WAL copy と隔離検査
+  metadata_profile/ # 隔離コピー上の ID・格納型・名前一致候補
   sqlite_probe/
     cli.py          # 調査 CLI
     probe.py        # SQLite 調査
